@@ -65,7 +65,7 @@
 .daily-quote-track{animation:none!important;position:relative;will-change:transform}
 
 /* Draggable Mingxiao cat companion */
-.cat-pet{position:fixed;right:24px;bottom:18px;z-index:75;width:138px;height:234px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;filter:drop-shadow(0 12px 10px rgba(39,40,32,.16));transition:filter .2s}
+.cat-pet{position:fixed;right:24px;bottom:18px;z-index:75;width:166px;height:282px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;filter:drop-shadow(0 12px 10px rgba(39,40,32,.16));transition:filter .2s}
 .cat-pet:active{cursor:grabbing}.cat-pet.is-dragging{filter:drop-shadow(0 16px 14px rgba(39,40,32,.24))}
 .cat-sprite{width:100%;height:100%;pointer-events:none;background:url("assets/mingxiao-cat-sprite.png") 0 0/500% 100% no-repeat;transform-origin:50% 90%;animation:catBreathe 3.2s ease-in-out infinite}
 .cat-pet.is-reacting .cat-sprite{animation:catReact .48s cubic-bezier(.2,.9,.35,1.25)}
@@ -73,7 +73,7 @@
 .cat-pet:hover .cat-tip{opacity:1;transform:translate(-50%,0)}
 @keyframes catBreathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.012)}}
 @keyframes catReact{0%{transform:translateY(0) rotate(0)}45%{transform:translateY(-12px) rotate(-2deg)}100%{transform:translateY(0) rotate(0)}}
-@media(max-width:760px){.cat-pet{width:108px;height:183px;right:8px;bottom:8px}.cat-tip{display:none}}
+@media(max-width:760px){.cat-pet{width:128px;height:217px;right:8px;bottom:8px}.cat-tip{display:none}}
 @media(prefers-reduced-motion:reduce){.cat-sprite{animation:none}.cat-pet.is-reacting .cat-sprite{animation:none}}
 
 </style>
