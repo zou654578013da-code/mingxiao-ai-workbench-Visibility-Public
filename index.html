@@ -13,12 +13,31 @@
     @media(max-width:1050px){.shell{grid-template-columns:210px minmax(0,1fr)}.work{padding:28px 24px}.grid{grid-template-columns:1fr}.stack{grid-template-columns:1fr 1fr}}
     @media(max-width:760px){.shell{display:block}.side{display:none}.work{padding:20px 14px 40px}.top{align-items:flex-start;margin-bottom:18px}.top h1{font-size:25px}.actions .secondary,.avatar{display:none}.mobile-nav{display:flex;gap:7px;overflow-x:auto;margin:0 -14px 14px;padding:0 14px 7px}.mobile-nav button{flex:0 0 auto;border:1px solid var(--line);border-radius:99px;background:var(--card);padding:7px 10px;font-size:10px}.mobile-nav button.active{background:var(--olive);color:#fff}.summary{grid-template-columns:1fr 1fr}.summary article{min-height:78px;padding:13px}.summary article:last-child{grid-column:1/-1}.grid,.stack{grid-template-columns:1fr}.head{padding:16px 14px 13px}.week{margin:0 10px}.days{margin:0 10px 14px}.day{min-height:52px;padding:5px}.ai{grid-template-columns:1fr 1fr}.formrow{grid-template-columns:1fr}.toast{left:14px;right:14px;bottom:14px;text-align:center}}
   .day.selected{background:#f0f2e8;box-shadow:inset 0 0 0 2px var(--olive)}.task-count{position:absolute;left:8px;right:8px;bottom:7px;padding:3px 6px;border-radius:6px;background:#f1e4d9;color:#9b6546;font-size:8px;text-align:center;white-space:nowrap;overflow:hidden}.task-count.all-done{background:var(--soft);color:var(--olive-dark)}.task{align-items:center}.task-main{display:flex;gap:10px;align-items:flex-start;flex:1;cursor:pointer}.delete-task{margin-left:auto;border:0;background:transparent;color:#b8a9a1;font-size:16px;padding:4px 6px;border-radius:6px}.delete-task:hover{background:#f5e5df;color:#a95d4d}
-  </style>
+  
+  .auth-screen{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:var(--paper)}
+  .auth-card{width:min(420px,100%);padding:34px;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:0 20px 70px rgba(47,48,39,.10)}
+  .auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:25px}.auth-card h2{margin:0;font-family:Georgia,"Songti SC",serif;font-size:25px}.auth-card p{margin:8px 0 22px;color:var(--muted);font-size:12px;line-height:1.7}
+  .auth-card label{display:grid;gap:7px;margin:12px 0;font-size:11px;color:var(--muted)}.auth-card input{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;background:#fff}
+  .auth-error{min-height:18px;margin-top:10px!important;color:#a35444!important}.loading-cover{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:var(--paper);font-size:13px;color:var(--muted)}
+  .hidden{display:none!important}.user-email{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:var(--muted)}
+  @media(max-width:760px){.user-email{display:none}.auth-card{padding:26px 22px}}
+</style>
 </head>
 <body>
-<main class="shell">
+<div class="loading-cover" id="loadingCover">正在连接明晓工作台…</div>
+<section class="auth-screen hidden" id="authScreen">
+  <form class="auth-card" id="loginForm">
+    <div class="auth-brand"><div class="mark">M</div><div><h2>明晓工作台</h2><small>MINGXIAO STUDIO</small></div></div>
+    <p>登录后，待办会安全保存到你的专属数据库，并在电脑和手机之间同步。</p>
+    <label>登录邮箱<input id="loginEmail" type="email" autocomplete="email" required placeholder="请输入你的邮箱"></label>
+    <label>密码<input id="loginPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="请输入密码"></label>
+    <button class="btn primary wide" id="loginButton" type="submit">登录工作台</button>
+    <p class="auth-error" id="authError"></p>
+  </form>
+</section>
+<main class="shell" id="appShell">
   <aside class="side"><div class="brand"><div class="mark">M</div><div><strong>明晓工作台</strong><small>MINGXIAO STUDIO</small></div></div><p class="label">工作板块</p><nav class="nav" id="nav"></nav><div class="storage"><span>资料存储</span><strong>iCloud 已同步</strong><small>桌面 / 工作材料</small><div class="meter"><i></i></div></div></aside>
-  <section class="work"><header class="top"><div><p id="dateLine">今天</p><h1 id="greeting">你好，明晓</h1></div><div class="actions"><button class="btn secondary" data-ai="Google 日历同步">日历同步</button><button class="btn primary" id="addTop">＋ 新增待办</button><div class="avatar">明</div></div></header><div class="mobile-nav" id="mobileNav"></div>
+  <section class="work"><header class="top"><div><p id="dateLine">今天</p><h1 id="greeting">你好，明晓</h1></div><div class="actions"><button class="btn secondary" data-ai="Google 日历同步">日历同步</button><button class="btn primary" id="addTop">＋ 新增待办</button><span class="user-email" id="userEmail"></span><button class="btn secondary" id="logoutButton">退出</button><div class="avatar">明</div></div></header><div class="mobile-nav" id="mobileNav"></div>
     <div class="summary"><article><span>今日待办</span><strong id="todayCount">0</strong><small>件等待完成</small></article><article><span>本月任务</span><strong id="monthCount">0</strong><small id="finishedCount">已完成 0 件</small></article><article><span>当前板块</span><strong class="board-name" id="activeName">全部工作</strong><small>点击左侧随时切换</small></article></div>
     <div class="grid"><section class="panel"><div class="head"><div><span class="eyebrow">MONTHLY PLAN</span><h2 id="monthTitle"></h2></div><div class="controls"><button id="prev">‹</button><button id="current">本月</button><button id="next">›</button></div></div><div class="cal week"><div>周一</div><div>周二</div><div>周三</div><div>周四</div><div>周五</div><div>周六</div><div>周日</div></div><div class="cal days" id="days"></div></section>
       <aside class="stack"><section class="panel"><div class="head"><div><span class="eyebrow">DAY PLAN</span><h2 id="dayTitle">今日工作</h2></div><span class="badge" id="selectedBadge">今天</span></div><div class="list" id="taskList"></div><button class="textbtn" id="addToday">＋ 添加这个日期的待办</button></section><section class="panel"><div class="head"><div><span class="eyebrow">AI SHORTCUTS</span><h2>快速开始</h2></div><span class="badge">✦</span></div><div class="ai"><button data-ai="招生海报">🎨<span><strong>制作招生海报</strong><small>竞赛 · 课程 · 项目</small></span></button><button data-ai="家长回复">💬<span><strong>生成家长回复</strong><small>自然、清楚、有温度</small></span></button><button data-ai="课程方案">📋<span><strong>整理课程方案</strong><small>规划 · 课表 · 反馈</small></span></button><button data-ai="新媒体文案">✍️<span><strong>创作新媒体文案</strong><small>朋友圈 · 短视频 · 直播</small></span></button></div></section></aside>
@@ -26,25 +45,67 @@
   </section>
 </main>
 <div class="modal-bg" id="modal"><form class="modal" id="taskForm"><div class="modal-head"><div><span class="eyebrow">NEW TASK</span><h2>新增待办</h2></div><button type="button" id="close">×</button></div><label>要做什么？<input id="title" required placeholder="例如：回复 Nathan 家长"></label><div class="formrow"><label>工作板块<select id="board"></select></label><label>截止日期<input id="date" type="date" value="2026-07-17"></label></div><button class="btn primary wide">保存待办</button></form></div><div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL='https://xdnrawhfgtmmonphkcwa.supabase.co';
+const SUPABASE_KEY='sb_publishable_HWE29hznAOmQI29fH56KxA_Jx9_mg1D';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const boards=[['全部工作','⌂'],['业务与客户','💼'],['学生管理','🎓'],['市场活动','📣'],['新媒体','🎬'],['课程与教材','📚'],['项目中心','🧪'],['教师与机构','👩‍🏫'],['模板与品牌','🎨'],['个人与行政','🧾']];
 const defaults=[{id:1,title:'制作 AMC 12 招生海报',board:'新媒体',date:'2026-07-17',done:false},{id:2,title:'制作 BBO 招生海报',board:'新媒体',date:'2026-07-17',done:false},{id:3,title:'制作 USABO 招生海报',board:'新媒体',date:'2026-07-17',done:false},{id:4,title:'制作化学 CCC 招生海报',board:'新媒体',date:'2026-07-18',done:false},{id:5,title:'制作物理碗招生海报',board:'新媒体',date:'2026-07-18',done:false},{id:6,title:'制作 NEC 招生海报',board:'新媒体',date:'2026-07-18',done:false},{id:7,title:'搭建 AI 工作台第一版',board:'个人与行政',date:'2026-07-17',done:true}];
 const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const localISO=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const realToday=new Date(),todayISO=localISO(realToday);
-let tasks=JSON.parse(localStorage.getItem('mingxiao-tasks')||'null')||defaults,active='全部工作',selectedDate=todayISO,view=new Date(realToday.getFullYear(),realToday.getMonth(),1);
-const save=()=>localStorage.setItem('mingxiao-tasks',JSON.stringify(tasks));
+let tasks=[],active='全部工作',selectedDate=todayISO,view=new Date(realToday.getFullYear(),realToday.getMonth(),1),currentUser=null;
 const filtered=()=>active==='全部工作'?tasks:tasks.filter(t=>t.board===active);
 const parseLocal=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
 const dateLabel=s=>{const d=parseLocal(s);return `${d.getMonth()+1}月${d.getDate()}日`};
+const showToast=(message,error=false)=>{const t=$('#toast');t.textContent=message;t.style.background=error?'#9a4f43':'#31342a';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)};
+function mapTask(t){return{id:t.id,title:t.title,board:t.board,date:t.due_date,done:t.completed,notes:t.notes||''}}
+async function loadTasks(){
+  const {data,error}=await db.from('tasks').select('id,title,board,due_date,completed,notes').order('due_date').order('created_at');
+  if(error){showToast('读取待办失败：'+error.message,true);return}
+  tasks=(data||[]).map(mapTask);render();
+}
+async function migrateLocalTasks(){
+  const marker='mingxiao-cloud-migrated-'+currentUser.id;
+  if(localStorage.getItem(marker))return;
+  const saved=JSON.parse(localStorage.getItem('mingxiao-tasks')||'null')||defaults;
+  const {count,error:countError}=await db.from('tasks').select('*',{count:'exact',head:true});
+  if(countError)throw countError;
+  if(!count&&saved.length){
+    const rows=saved.map(t=>({user_id:currentUser.id,title:t.title,board:t.board,due_date:t.date,completed:!!t.done,notes:t.notes||''}));
+    const {error}=await db.from('tasks').insert(rows);if(error)throw error;
+    showToast('✓ 已把原有待办迁移到云端');
+  }
+  localStorage.setItem(marker,'1');
+}
+async function startApp(session){
+  currentUser=session.user;$('#userEmail').textContent=currentUser.email||'';$('#authScreen').classList.add('hidden');$('#appShell').classList.remove('hidden');
+  try{await migrateLocalTasks();await loadTasks()}catch(e){showToast('迁移数据失败：'+e.message,true)}
+}
+function showLogin(){currentUser=null;tasks=[];$('#appShell').classList.add('hidden');$('#authScreen').classList.remove('hidden')}
+async function initAuth(){
+  const {data:{session}}=await db.auth.getSession();$('#loadingCover').classList.add('hidden');if(session)await startApp(session);else showLogin();
+}
 function updateClock(){const d=new Date(),week=['日','一','二','三','四','五','六'];$('#dateLine').textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 · 星期${week[d.getDay()]}`;const h=d.getHours();$('#greeting').textContent=`${h<11?'早上好':h<14?'中午好':h<18?'下午好':'晚上好'}，明晓`}
 function renderNav(){const open=filtered().filter(t=>!t.done).length;const html=boards.map(([n,i])=>`<button class="${active===n?'active':''}" data-board="${n}"><i>${i}</i><span>${n}</span>${n==='全部工作'?`<em>${open}</em>`:''}</button>`).join('');$('#nav').innerHTML=html;$('#mobileNav').innerHTML=boards.map(([n,i])=>`<button class="${active===n?'active':''}" data-board="${n}">${i} ${n}</button>`).join('');document.querySelectorAll('[data-board]').forEach(b=>b.onclick=()=>{active=b.dataset.board;render()})}
-function renderSummary(){const f=filtered(),today=f.filter(t=>t.date===todayISO);$('#todayCount').textContent=today.filter(t=>!t.done).length;$('#monthCount').textContent=f.length;$('#finishedCount').textContent=`已完成 ${f.filter(t=>t.done).length} 件`;$('#activeName').textContent=active}
-function renderTasks(){const dayTasks=filtered().filter(t=>t.date===selectedDate);$('#dayTitle').textContent=selectedDate===todayISO?'今日工作':`${dateLabel(selectedDate)}待办`;$('#selectedBadge').textContent=selectedDate===todayISO?'今天':dateLabel(selectedDate);$('#taskList').innerHTML=dayTasks.length?dayTasks.map(t=>`<div class="task ${t.done?'done':''}"><label class="task-main"><input type="checkbox" data-id="${t.id}" ${t.done?'checked':''}><span><strong>${t.title}</strong><small>${t.board}</small></span></label><button class="delete-task" data-delete="${t.id}" title="删除任务">×</button></div>`).join(''):'<p style="font-size:11px;color:#77796f;padding:10px 0">这一天还没有安排。</p>';document.querySelectorAll('[data-id]').forEach(c=>c.onchange=()=>{const t=tasks.find(x=>x.id==c.dataset.id);t.done=c.checked;save();render()});document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{const t=tasks.find(x=>x.id==b.dataset.delete);if(confirm(`删除“${t.title}”吗？`)){tasks=tasks.filter(x=>x.id!=b.dataset.delete);save();render()}})}
+function renderSummary(){const f=filtered(),today=f.filter(t=>t.date===todayISO),y=view.getFullYear(),m=view.getMonth(),month=f.filter(t=>{const d=parseLocal(t.date);return d.getFullYear()===y&&d.getMonth()===m});$('#todayCount').textContent=today.filter(t=>!t.done).length;$('#monthCount').textContent=month.length;$('#finishedCount').textContent=`已完成 ${month.filter(t=>t.done).length} 件`;$('#activeName').textContent=active}
+function renderTasks(){const dayTasks=filtered().filter(t=>t.date===selectedDate);$('#dayTitle').textContent=selectedDate===todayISO?'今日工作':`${dateLabel(selectedDate)}待办`;$('#selectedBadge').textContent=selectedDate===todayISO?'今天':dateLabel(selectedDate);$('#taskList').innerHTML=dayTasks.length?dayTasks.map(t=>`<div class="task ${t.done?'done':''}"><label class="task-main"><input type="checkbox" data-id="${t.id}" ${t.done?'checked':''}><span><strong>${esc(t.title)}</strong><small>${esc(t.board)}</small></span></label><button class="delete-task" data-delete="${t.id}" title="删除任务">×</button></div>`).join(''):'<p style="font-size:11px;color:#77796f;padding:10px 0">这一天还没有安排。</p>';
+  document.querySelectorAll('[data-id]').forEach(c=>c.onchange=async()=>{c.disabled=true;const {error}=await db.from('tasks').update({completed:c.checked}).eq('id',c.dataset.id);if(error)showToast('更新失败：'+error.message,true);await loadTasks()});
+  document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=async()=>{const t=tasks.find(x=>x.id===b.dataset.delete);if(confirm(`删除“${t.title}”吗？`)){const {error}=await db.from('tasks').delete().eq('id',b.dataset.delete);if(error)showToast('删除失败：'+error.message,true);else showToast('已删除待办');await loadTasks()}});
+}
 function iso(y,m,d){return localISO(new Date(y,m,d))}
-function renderCalendar(){const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),offset=(first.getDay()+6)%7,count=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate(),names=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];$('#monthTitle').textContent=`${y}年 · ${names[m]}`;let out='';for(let i=0;i<42;i++){let raw=i-offset+1,day,date,muted=false;if(raw<1){day=prev+raw;date=iso(y,m-1,day);muted=true}else if(raw>count){day=raw-count;date=iso(y,m+1,day);muted=true}else{day=raw;date=iso(y,m,day)}const dt=filtered().filter(t=>t.date===date),done=dt.length&&dt.every(t=>t.done);out+=`<button class="day ${muted?'muted':''} ${date===todayISO?'today':''} ${date===selectedDate?'selected':''}" data-date="${date}"><span>${day}</span>${dt.length?`<div class="task-count ${done?'all-done':''}">${dt.length}项${done?' · 已完成':''}</div>`:''}</button>`}$('#days').innerHTML=out;document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selectedDate=b.dataset.date;renderTasks();renderCalendar()})}
+function renderCalendar(){const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),offset=(first.getDay()+6)%7,count=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate(),names=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];$('#monthTitle').textContent=`${y}年 · ${names[m]}`;let out='';for(let i=0;i<42;i++){let raw=i-offset+1,day,date,muted=false;if(raw<1){day=prev+raw;date=iso(y,m-1,day);muted=true}else if(raw>count){day=raw-count;date=iso(y,m+1,day);muted=true}else{day=raw;date=iso(y,m,day)}const dt=filtered().filter(t=>t.date===date),done=dt.length&&dt.every(t=>t.done);out+=`<button class="day ${muted?'muted':''} ${date===todayISO?'today':''} ${date===selectedDate?'selected':''}" data-date="${date}"><span>${day}</span>${dt.length?`<div class="task-count ${done?'all-done':''}">${dt.length}项${done?' · 已完成':''}</div>`:''}</button>`}$('#days').innerHTML=out;document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selectedDate=b.dataset.date;renderTasks();renderCalendar()});renderSummary()}
 function render(){updateClock();renderNav();renderSummary();renderTasks();renderCalendar()}
 function openModal(d=selectedDate){$('#date').value=d;$('#modal').classList.add('show');setTimeout(()=>$('#title').focus(),0)}function closeModal(){$('#modal').classList.remove('show');$('#title').value=''}
-$('#board').innerHTML=boards.slice(1).map(([n])=>`<option>${n}</option>`).join('');$('#addTop').onclick=()=>openModal(selectedDate);$('#addToday').onclick=()=>openModal(selectedDate);$('#close').onclick=closeModal;$('#modal').onclick=e=>{if(e.target===$('#modal'))closeModal()};$('#taskForm').onsubmit=e=>{e.preventDefault();tasks.push({id:Date.now(),title:$('#title').value.trim(),board:$('#board').value,date:$('#date').value,done:false});selectedDate=$('#date').value;view=new Date(...selectedDate.split('-').map((n,i)=>i===1?Number(n)-1:Number(n)));save();closeModal();render()};$('#prev').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);renderCalendar()};$('#next').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);renderCalendar()};$('#current').onclick=()=>{selectedDate=todayISO;view=new Date(realToday.getFullYear(),realToday.getMonth(),1);render()};document.querySelectorAll('[data-ai]').forEach(b=>b.onclick=()=>{const t=$('#toast');t.textContent=`✦ ${b.dataset.ai}将在下一阶段接入你的专属 AI 流程`;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)});render();
+$('#board').innerHTML=boards.slice(1).map(([n])=>`<option>${n}</option>`).join('');
+$('#addTop').onclick=()=>openModal(selectedDate);$('#addToday').onclick=()=>openModal(selectedDate);$('#close').onclick=closeModal;$('#modal').onclick=e=>{if(e.target===$('#modal'))closeModal()};
+$('#taskForm').onsubmit=async e=>{e.preventDefault();const button=e.submitter;button.disabled=true;button.textContent='正在保存…';const row={user_id:currentUser.id,title:$('#title').value.trim(),board:$('#board').value,due_date:$('#date').value,completed:false};const {error}=await db.from('tasks').insert(row);button.disabled=false;button.textContent='保存待办';if(error){showToast('保存失败：'+error.message,true);return}selectedDate=$('#date').value;view=parseLocal(selectedDate);closeModal();showToast('✓ 待办已保存并同步');await loadTasks()};
+$('#prev').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);renderCalendar()};$('#next').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);renderCalendar()};$('#current').onclick=()=>{selectedDate=todayISO;view=new Date(realToday.getFullYear(),realToday.getMonth(),1);render()};
+$('#loginForm').onsubmit=async e=>{e.preventDefault();const btn=$('#loginButton');btn.disabled=true;btn.textContent='正在登录…';$('#authError').textContent='';const {data,error}=await db.auth.signInWithPassword({email:$('#loginEmail').value.trim(),password:$('#loginPassword').value});btn.disabled=false;btn.textContent='登录工作台';if(error){$('#authError').textContent='登录失败，请检查邮箱和密码。';return}await startApp(data.session)};
+$('#logoutButton').onclick=async()=>{await db.auth.signOut();showLogin()};
+document.querySelectorAll('[data-ai]').forEach(b=>b.onclick=()=>showToast(`✦ ${b.dataset.ai}将在下一阶段接入你的专属 AI 流程`));
+initAuth();
 </script>
 </body></html>
