@@ -54,6 +54,9 @@
   @media(max-width:1150px){.teacher-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.teacher-grid{grid-template-columns:repeat(2,1fr)}.teacher-hero{align-items:flex-start;padding:20px}.teacher-hero .actions{flex-wrap:wrap;justify-content:flex-end}}@media(max-width:520px){.teacher-grid{grid-template-columns:1fr 1fr;gap:9px}.teacher-info{padding:10px}.teacher-hero{display:block}.teacher-hero .actions{margin-top:14px;justify-content:flex-start}.teacher-card-actions{display:grid}.teacher-info strong{font-size:12px}}
 
   .teacher-grid{align-items:start}.teacher-poster{aspect-ratio:auto;height:auto;background:transparent}.teacher-poster img{display:block;width:100%;height:auto;object-fit:contain}
+
+  .holiday-tag{position:absolute;right:7px;top:8px;padding:3px 6px;border-radius:6px;background:#f7ded7;color:#a25248;font-size:9px;font-weight:700}.holiday-day{background:color-mix(in srgb,var(--theme-day,#fff) 88%,#f7ddd7 12%)}.workday-tag{background:#e5e9f2;color:#5f6b83}.workday-day{background:color-mix(in srgb,var(--theme-day,#fff) 90%,#dce3ef 10%)}.day.selected .holiday-tag{box-shadow:0 0 0 1px rgba(255,255,255,.75)}
+  @media(max-width:760px){.holiday-tag{right:3px;top:4px;padding:2px 4px;font-size:7px}.day>span{margin-top:14px}}
 </style>
 </head>
 <body>
@@ -91,6 +94,18 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const localISO=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const realToday=new Date(),todayISO=localISO(realToday);
+const chinaHolidayRanges=[
+  ['2026-01-01','2026-01-03','2026-01-01','元旦'],
+  ['2026-02-15','2026-02-23','2026-02-17','春节'],
+  ['2026-04-04','2026-04-06','2026-04-04','清明'],
+  ['2026-05-01','2026-05-05','2026-05-01','劳动节'],
+  ['2026-06-19','2026-06-21','2026-06-19','端午'],
+  ['2026-09-25','2026-09-27','2026-09-25','中秋'],
+  ['2026-10-01','2026-10-07','2026-10-01','国庆']
+];
+const chinaWorkdays=new Set(['2026-01-04','2026-02-14','2026-02-28','2026-05-09','2026-09-20','2026-10-10']);
+function chinaDayInfo(date){if(chinaWorkdays.has(date))return{type:'work',label:'班'};for(const [start,end,labelDate,name] of chinaHolidayRanges)if(date>=start&&date<=end)return{type:'holiday',label:date===labelDate?name:'休'};return null}
+
 let tasks=[],resources=[],teachers=[],editingTaskId=null,editingTeacherId=null,active='全部工作',selectedDate=todayISO,view=new Date(realToday.getFullYear(),realToday.getMonth(),1),currentUser=null;
 const filtered=()=>active==='全部工作'?tasks:tasks.filter(t=>t.board===active);
 const parseLocal=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
@@ -154,7 +169,7 @@ function renderResources(){if(!$('#resourceList'))return;const list=active==='�
   document.querySelectorAll('[data-resource-delete]').forEach(b=>b.onclick=async()=>{const r=resources.find(x=>x.id===b.dataset.resourceDelete);if(confirm(`删除资料“${r.title}”吗？`)){const {error}=await db.from('resources').delete().eq('id',b.dataset.resourceDelete);if(error)showToast('删除失败：'+error.message,true);else{showToast('已删除资料');await loadResources()}}});
 }
 function iso(y,m,d){return localISO(new Date(y,m,d))}
-function renderCalendar(){const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),offset=(first.getDay()+6)%7,count=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate(),names=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];$('#monthTitle').textContent=`${y}年 · ${names[m]}`;let out='';for(let i=0;i<42;i++){let raw=i-offset+1,day,date,muted=false;if(raw<1){day=prev+raw;date=iso(y,m-1,day);muted=true}else if(raw>count){day=raw-count;date=iso(y,m+1,day);muted=true}else{day=raw;date=iso(y,m,day)}const dt=filtered().filter(t=>t.date===date),done=dt.length&&dt.every(t=>t.done);out+=`<button class="day ${muted?'muted':''} ${date===todayISO?'today':''} ${date===selectedDate?'selected':''}" data-date="${date}"><span>${day}</span>${dt.length?`<div class="task-count ${done?'all-done':''}">${dt.length}项${done?' · 已完成':''}</div>`:''}</button>`}$('#days').innerHTML=out;document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selectedDate=b.dataset.date;renderTasks();renderCalendar()});renderSummary()}
+function renderCalendar(){const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),offset=(first.getDay()+6)%7,count=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate(),names=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];$('#monthTitle').textContent=`${y}年 · ${names[m]}`;let out='';for(let i=0;i<42;i++){let raw=i-offset+1,day,date,muted=false;if(raw<1){day=prev+raw;date=iso(y,m-1,day);muted=true}else if(raw>count){day=raw-count;date=iso(y,m+1,day);muted=true}else{day=raw;date=iso(y,m,day)}const dt=filtered().filter(t=>t.date===date),done=dt.length&&dt.every(t=>t.done),china=chinaDayInfo(date);out+=`<button class="day ${muted?'muted':''} ${date===todayISO?'today':''} ${date===selectedDate?'selected':''} ${china?.type==='holiday'?'holiday-day':''} ${china?.type==='work'?'workday-day':''}" data-date="${date}"><span>${day}</span>${china?`<b class="holiday-tag ${china.type==='work'?'workday-tag':''}">${china.label}</b>`:''}${dt.length?`<div class="task-count ${done?'all-done':''}">${dt.length}项${done?' · 已完成':''}</div>`:''}</button>`}$('#days').innerHTML=out;document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selectedDate=b.dataset.date;renderTasks();renderCalendar()});renderSummary()}
 function render(){updateClock();renderWorkspace();renderNav();renderSummary();renderTasks();renderCalendar();renderResources();renderTeachers()}
 function openModal(d=selectedDate,task=null){editingTaskId=task?.id||null;$('#taskModalTitle').textContent=task?'修改待办':'新增待办';$('#taskSubmit').textContent=task?'保存修改':'保存待办';$('#title').value=task?.title||'';$('#board').value=task?.board||(active==='全部工作'?'业务与客户':active);$('#date').value=task?.date||d;$('#modal').classList.add('show');setTimeout(()=>$('#title').focus(),0)}
 function closeModal(){$('#modal').classList.remove('show');$('#title').value='';editingTaskId=null}
