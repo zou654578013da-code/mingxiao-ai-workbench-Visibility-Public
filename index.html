@@ -62,6 +62,7 @@
 .summary article{position:relative}
 
   .summary article:first-child{padding-bottom:54px}.daily-quote{left:18px;right:18px;bottom:14px;height:31px;border-radius:9px;background:color-mix(in srgb,var(--theme-task,#faf9f4) 72%,var(--olive) 28%);font-size:12px;font-weight:600;line-height:31px}.daily-quote::before{left:10px}.daily-quote-track{padding-left:31px;animation:quoteScrollClear 12s ease-in-out infinite}@keyframes quoteScrollClear{0%,22%{transform:translateX(0)}78%,100%{transform:translateX(-6%)}}@media(max-width:760px){.daily-quote{left:10px;right:10px;height:27px;line-height:27px;font-size:10px}.summary article:first-child{padding-bottom:47px}}
+.daily-quote-track{animation:none!important;position:relative;will-change:transform}
 </style>
 </head>
 <body>
@@ -188,7 +189,8 @@ const encouragements=[
   '让今天有一个清晰的重点，就已经足够。',
   '愿你忙有所获，也能在缝隙里感受到轻松。'
 ];
-function renderDailyQuote(){const start=new Date(realToday.getFullYear(),0,0),day=Math.floor((realToday-start)/86400000);$('#dailyQuote').textContent=encouragements[(day-1)%encouragements.length]}
+function startDailyQuoteMarquee(){const box=document.querySelector('.daily-quote'),track=$('#dailyQuote');if(!box||!track)return;track.getAnimations().forEach(a=>a.cancel());const from=box.clientWidth+12,to=-track.scrollWidth-12,distance=from-to,duration=Math.max(9000,distance/34*1000);track.animate([{transform:`translateX(${from}px)`},{transform:`translateX(${to}px)`}],{duration,iterations:Infinity,easing:'linear'})}
+function renderDailyQuote(){const start=new Date(realToday.getFullYear(),0,0),day=Math.floor((realToday-start)/86400000);$('#dailyQuote').textContent=encouragements[(day-1)%encouragements.length];requestAnimationFrame(startDailyQuoteMarquee)}
 function updateClock(){const d=new Date(),week=['日','一','二','三','四','五','六'];$('#dateLine').textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 · 星期${week[d.getDay()]}`;const h=d.getHours();$('#greeting').textContent=`${h<11?'早上好':h<14?'中午好':h<18?'下午好':'晚上好'}，明晓`}
 function renderWorkspace(){const isTeachers=active==='教师与机构';$('#taskWorkspace').classList.toggle('hidden',isTeachers);$('#teacherWorkspace').classList.toggle('hidden',!isTeachers);$('#addTop').classList.toggle('hidden',isTeachers);$('#calendarExport').classList.toggle('hidden',isTeachers)}
 function renderTeachers(){if(!$('#teacherGrid'))return;$('#teacherGrid').innerHTML=teachers.length?teachers.map(t=>`<article class="teacher-card"><button class="teacher-poster" data-poster="${t.id}"><img src="${esc(t.poster_url||'')}" alt="${esc(t.name)}的教师介绍海报" loading="lazy"></button><div class="teacher-info"><strong>${esc(t.name)}</strong><small>${esc(t.subject||'暂未填写授课方向')}</small><div class="teacher-card-actions"><button data-teacher-edit="${t.id}">修改信息</button><button data-teacher-delete="${t.id}">删除</button></div></div></article>`).join(''):'<div class="teacher-empty">还没有教师海报。点击“批量上传海报”，可以一次选择多张图片。</div>';
