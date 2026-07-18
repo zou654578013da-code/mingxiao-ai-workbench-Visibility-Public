@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#758052">
   <title>明晓的 AI 工作台</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="明晓工作台">
+
   <style>
     :root{--ink:#292b24;--muted:#77796f;--line:#e7e5dc;--paper:#f5f4ef;--card:#fffefa;--olive:#758052;--olive-dark:#5d6740;--soft:#e7eadb}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}button,input,select{font:inherit;color:inherit}button{cursor:pointer}.shell{min-height:100vh;display:grid;grid-template-columns:238px minmax(0,1fr)}
@@ -76,6 +82,29 @@
 @media(max-width:760px){.cat-pet{width:128px;height:217px;right:8px;bottom:8px}.cat-tip{display:none}}
 @media(prefers-reduced-motion:reduce){.cat-sprite{animation:none}.cat-pet.is-reacting .cat-sprite{animation:none}}
 
+
+/* V30 mobile app experience */
+.install-app{display:none}
+.app-bottom-nav,.quick-fab{display:none}
+.quick-sheet{position:fixed;inset:0;z-index:95;display:none;align-items:end;padding:18px;background:rgba(30,32,27,.36);backdrop-filter:blur(4px)}
+.quick-sheet.show{display:flex}.quick-sheet-card{width:100%;padding:14px;border:1px solid var(--theme-line,var(--line));border-radius:21px;background:var(--theme-card,#fffefa);box-shadow:0 -12px 45px rgba(35,38,29,.18)}
+.quick-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:3px 4px 10px}.quick-sheet-head strong{font-size:17px}.quick-sheet-head button{border:0;background:transparent;font-size:25px;color:var(--muted)}
+.quick-sheet-card>button:not(.quick-sheet-head button){display:grid;grid-template-columns:36px 1fr;column-gap:10px;width:100%;padding:12px 8px;border:0;border-top:1px solid var(--theme-line,var(--line));background:transparent;text-align:left}
+.quick-sheet-card>button>span{grid-row:1/3;display:grid;place-items:center;font-size:21px}.quick-sheet-card>button>strong{font-size:13px}.quick-sheet-card>button>small{margin-top:3px;color:var(--muted);font-size:10px}
+@media(max-width:760px){
+  body{padding-bottom:72px}.work{padding-bottom:112px}.install-app{display:inline-flex}
+  .top{gap:10px}.top .actions{gap:5px;flex-wrap:wrap;justify-content:flex-end}.top .actions .btn{padding:8px 10px}.top .actions #calendarExport,.top .actions #logoutButton{display:none}
+  .app-bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:90;display:grid;grid-template-columns:repeat(5,1fr);height:68px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));border-top:1px solid var(--theme-line,var(--line));background:color-mix(in srgb,var(--theme-card,#fffefa) 94%,transparent);box-shadow:0 -8px 26px rgba(38,42,32,.10);backdrop-filter:blur(14px)}
+  .app-bottom-nav button{display:grid;place-items:center;align-content:center;gap:2px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-size:9px}.app-bottom-nav button span{font-size:18px;line-height:1}.app-bottom-nav button.active{background:var(--soft);color:var(--olive-dark);font-weight:700}
+  .quick-fab{position:fixed;right:15px;bottom:81px;z-index:89;display:grid;place-items:center;width:52px;height:52px;border:0;border-radius:50%;background:var(--olive);color:#fff;box-shadow:0 9px 24px rgba(53,61,39,.28);font-size:29px;line-height:1}
+  .quick-fab:active{transform:scale(.94)}.quick-sheet{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+  .cat-pet{right:auto;left:7px;bottom:76px}
+  .summary article:first-child{grid-column:1/-1;min-height:112px}.summary article:first-child strong{font-size:39px}.summary article:nth-child(2),.summary article:nth-child(3){min-height:75px}
+  .mobile-nav{scrollbar-width:none}.mobile-nav::-webkit-scrollbar{display:none}
+  #mobileCalendar,#mobileToday,#mobileAI,#mobileResources{scroll-margin-top:14px}
+}
+@media(display-mode:standalone){.install-app{display:none!important}}
+
 </style>
 </head>
 <body>
@@ -92,16 +121,34 @@
 </section>
 <main class="shell" id="appShell">
   <aside class="side"><div class="brand"><div class="mark">M</div><div><strong>明晓工作台</strong><small>MINGXIAO STUDIO</small></div></div><p class="label">工作板块</p><nav class="nav" id="nav"></nav><div class="storage"><span>资料存储</span><strong>iCloud 已同步</strong><small>桌面 / 工作材料</small><div class="meter"><i></i></div></div></aside>
-  <section class="work"><header class="top"><div><p id="dateLine">今天</p><h1 id="greeting">你好，明晓</h1></div><div class="actions"><button class="btn secondary" id="appearanceButton">外观</button><button class="btn secondary" id="calendarExport">导出日历</button><button class="btn primary" id="addTop">＋ 新增待办</button><span class="user-email" id="userEmail"></span><button class="btn secondary" id="logoutButton">退出</button><div class="avatar">明</div></div></header><div class="mobile-nav" id="mobileNav"></div>
+  <section class="work"><header class="top"><div><p id="dateLine">今天</p><h1 id="greeting">你好，明晓</h1></div><div class="actions"><button class="btn secondary install-app" id="installAppButton">安装到手机</button><button class="btn secondary" id="appearanceButton">外观</button><button class="btn secondary" id="calendarExport">导出日历</button><button class="btn primary" id="addTop">＋ 新增待办</button><span class="user-email" id="userEmail"></span><button class="btn secondary" id="logoutButton">退出</button><div class="avatar">明</div></div></header><div class="mobile-nav" id="mobileNav"></div>
     <div id="taskWorkspace"><div class="summary"><article><span>今日待办</span><strong id="todayCount">0</strong><div class="daily-quote" title="今日鼓励"><div class="daily-quote-track" id="dailyQuote"></div></div></article><article><span>本月任务</span><strong id="monthCount">0</strong><small id="finishedCount">已完成 0 件</small></article><article><span>当前板块</span><strong class="board-name" id="activeName">全部工作</strong><small>点击左侧随时切换</small></article></div>
-    <div class="grid"><section class="panel"><div class="head"><div><span class="eyebrow">MONTHLY PLAN</span><h2 id="monthTitle"></h2></div><div class="controls"><button id="prev">‹</button><button id="current">本月</button><button id="next">›</button></div></div><div class="cal week"><div>周一</div><div>周二</div><div>周三</div><div>周四</div><div>周五</div><div>周六</div><div>周日</div></div><div class="cal days" id="days"></div></section>
-      <aside class="stack"><section class="panel"><div class="head"><div><span class="eyebrow">DAY PLAN</span><h2 id="dayTitle">今日工作</h2></div><span class="badge" id="selectedBadge">今天</span></div><div class="list" id="taskList"></div><button class="textbtn" id="addToday">＋ 添加这个日期的待办</button></section><section class="panel"><div class="head"><div><span class="eyebrow">AI SHORTCUTS</span><h2>快速开始</h2></div><span class="badge">✦</span></div><div class="ai"><button data-ai="招生海报">🎨<span><strong>制作招生海报</strong><small>竞赛 · 课程 · 项目</small></span></button><button data-ai="家长回复">💬<span><strong>生成家长回复</strong><small>自然、清楚、有温度</small></span></button><button data-ai="课程方案">📋<span><strong>整理课程方案</strong><small>规划 · 课表 · 反馈</small></span></button><button data-ai="新媒体文案">✍️<span><strong>创作新媒体文案</strong><small>朋友圈 · 短视频 · 直播</small></span></button></div></section></aside>
+    <div class="grid"><section class="panel" id="mobileCalendar"><div class="head"><div><span class="eyebrow">MONTHLY PLAN</span><h2 id="monthTitle"></h2></div><div class="controls"><button id="prev">‹</button><button id="current">本月</button><button id="next">›</button></div></div><div class="cal week"><div>周一</div><div>周二</div><div>周三</div><div>周四</div><div>周五</div><div>周六</div><div>周日</div></div><div class="cal days" id="days"></div></section>
+      <aside class="stack"><section class="panel" id="mobileToday"><div class="head"><div><span class="eyebrow">DAY PLAN</span><h2 id="dayTitle">今日工作</h2></div><span class="badge" id="selectedBadge">今天</span></div><div class="list" id="taskList"></div><button class="textbtn" id="addToday">＋ 添加这个日期的待办</button></section><section class="panel" id="mobileAI"><div class="head"><div><span class="eyebrow">AI SHORTCUTS</span><h2>快速开始</h2></div><span class="badge">✦</span></div><div class="ai"><button data-ai="招生海报">🎨<span><strong>制作招生海报</strong><small>竞赛 · 课程 · 项目</small></span></button><button data-ai="家长回复">💬<span><strong>生成家长回复</strong><small>自然、清楚、有温度</small></span></button><button data-ai="课程方案">📋<span><strong>整理课程方案</strong><small>规划 · 课表 · 反馈</small></span></button><button data-ai="新媒体文案">✍️<span><strong>创作新媒体文案</strong><small>朋友圈 · 短视频 · 直播</small></span></button></div></section></aside>
     </div>
-    <section class="panel resource-panel"><div class="head"><div><span class="eyebrow">RESOURCE LIBRARY</span><h2>常用资料</h2></div><div class="actions"><button class="btn" id="exportBackup">备份数据</button><label class="btn" style="cursor:pointer">恢复备份<input id="importBackup" type="file" accept="application/json,.json" hidden></label><button class="btn primary" id="addResource">＋ 新增资料</button></div></div><div class="resource-grid" id="resourceList"></div></section></div>
+    <section class="panel resource-panel" id="mobileResources"><div class="head"><div><span class="eyebrow">RESOURCE LIBRARY</span><h2>常用资料</h2></div><div class="actions"><button class="btn" id="exportBackup">备份数据</button><label class="btn" style="cursor:pointer">恢复备份<input id="importBackup" type="file" accept="application/json,.json" hidden></label><button class="btn primary" id="addResource">＋ 新增资料</button></div></div><div class="resource-grid" id="resourceList"></div></section></div>
     <section id="teacherWorkspace" class="hidden"><div class="teacher-hero"><div><span class="eyebrow">TEACHER POSTER GALLERY</span><h2>教师介绍海报</h2><p>集中保存和展示教师宣传海报，点击海报可以放大查看。</p><div class="upload-progress" id="teacherUploadProgress"></div></div><div class="actions"><label class="btn primary" style="cursor:pointer">＋ 批量上传海报<input id="teacherUpload" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden></label></div></div><div class="teacher-grid" id="teacherGrid"></div></section>
   </section>
 </main>
 <div class="modal-bg" id="modal"><form class="modal" id="taskForm"><div class="modal-head"><div><span class="eyebrow">TASK</span><h2 id="taskModalTitle">新增待办</h2></div><button type="button" id="close">×</button></div><label>要做什么？<input id="title" required placeholder="例如：回复 Nathan 家长"></label><div class="formrow"><label>工作板块<select id="board"></select></label><label>截止日期<input id="date" type="date" value="2026-07-17"></label></div><button class="btn primary wide" id="taskSubmit">保存待办</button></form></div><div class="modal-bg" id="resourceModal"><form class="modal" id="resourceForm"><div class="modal-head"><div><span class="eyebrow">RESOURCE</span><h2>新增常用资料</h2></div><button type="button" id="closeResource">×</button></div><label>资料名称<input id="resourceTitle" required placeholder="例如：招生海报模板"></label><div class="formrow"><label>所属板块<select id="resourceBoard"></select></label><label>网页链接（选填）<input id="resourceLink" type="url" placeholder="https://..."></label></div><label>文件位置（选填）<textarea id="resourceLocation" placeholder="例如：iCloud 云盘 → 桌面 → 工作材料 → 04_新媒体"></textarea></label><p class="hint">网页无法直接读取你的私人 iCloud 文件，只记录位置；有公开或共享链接时可直接打开。</p><button class="btn primary wide">保存资料</button></form></div><div class="modal-bg" id="teacherModal"><form class="modal" id="teacherForm"><div class="modal-head"><div><span class="eyebrow">TEACHER</span><h2>修改教师信息</h2></div><button type="button" id="closeTeacher">×</button></div><label>教师姓名<input id="teacherName" required maxlength="100"></label><label style="margin-top:13px">授课方向<input id="teacherSubject" maxlength="200" placeholder="例如：BBO / USABO 生物竞赛"></label><button class="btn primary wide" style="margin-top:18px">保存修改</button></form></div><div class="poster-lightbox" id="posterLightbox"><button id="closePoster" type="button">×</button><img id="posterLarge" alt="教师介绍海报"></div><div class="modal-bg" id="appearanceModal"><form class="modal" id="appearanceForm"><div class="modal-head"><div><span class="eyebrow">APPEARANCE</span><h2>自定义工作台外观</h2></div><button type="button" id="closeAppearance">×</button></div><label>推荐背景色</label><div class="appearance-swatches"><button type="button" class="swatch" data-color="#e8e6df" style="background:#e8e6df" title="灰米色"></button><button type="button" class="swatch" data-color="#ddd8cf" style="background:#ddd8cf" title="暖灰色"></button><button type="button" class="swatch" data-color="#d9ddd4" style="background:#d9ddd4" title="灰绿色"></button><button type="button" class="swatch" data-color="#d9dce2" style="background:#d9dce2" title="雾蓝灰"></button><button type="button" class="swatch" data-color="#e3d9d6" style="background:#e3d9d6" title="浅豆沙"></button></div><div class="appearance-row"><label>自选背景色</label><input id="themeColor" type="color" value="#e8e6df"></div><label class="file-button">选择自己的背景图片<input id="themeImage" type="file" accept="image/*" hidden></label><div class="appearance-row"><label>图片遮罩深浅</label><input id="themeOpacity" type="range" min="0" max="75" value="18"></div><div class="appearance-actions"><button type="button" class="btn" id="clearThemeImage">移除背景图片</button><button type="button" class="btn" id="resetTheme">恢复默认</button></div></form></div><div class="modal-bg" id="aiModal"><form class="modal" id="aiForm"><div class="modal-head"><div><span class="eyebrow">AI WORKFLOW</span><h2 id="aiModalTitle">AI 快速开始</h2></div><button type="button" id="closeAI">×</button></div><p class="hint" id="aiHint"></p><label>把你知道的信息写在这里<textarea id="aiRequest" required placeholder=""></textarea></label><p class="hint">点击后会复制整理好的提示词并打开 ChatGPT；到 ChatGPT 中粘贴发送即可。</p><button class="btn primary wide" type="submit">复制提示词并打开 ChatGPT</button></form></div><div class="cat-pet" id="catPet" role="button" tabindex="0" aria-label="可拖动的小猫，碰一碰会换动作"><div class="cat-tip">拖动我 · 碰一碰</div><div class="cat-sprite" id="catSprite"></div></div>
+
+<nav class="app-bottom-nav" id="appBottomNav" aria-label="手机主导航">
+  <button class="active" data-mobile-action="home"><span>⌂</span>首页</button>
+  <button data-mobile-action="calendar"><span>▦</span>日历</button>
+  <button data-mobile-action="students"><span>🎓</span>学生</button>
+  <button data-mobile-action="resources"><span>▣</span>资料</button>
+  <button data-mobile-action="ai"><span>✦</span>AI</button>
+</nav>
+<button class="quick-fab" id="quickFab" aria-label="快速新增">＋</button>
+<div class="quick-sheet" id="quickSheet">
+  <div class="quick-sheet-card">
+    <div class="quick-sheet-head"><strong>快速记录</strong><button id="closeQuickSheet" aria-label="关闭">×</button></div>
+    <button data-quick="task"><span>📝</span><strong>新增待办</strong><small>记录今天要做的事</small></button>
+    <button data-quick="student"><span>🎓</span><strong>学生记录</strong><small>加入学生管理板块</small></button>
+    <button data-quick="customer"><span>💬</span><strong>客户记录</strong><small>加入业务与客户板块</small></button>
+    <button data-quick="voice"><span>🎙️</span><strong>语音记录</strong><small>说完自动填入待办</small></button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -281,11 +328,27 @@ document.querySelectorAll('[data-ai]').forEach(b=>b.onclick=()=>openAI(b.dataset
 $('#closeAI').onclick=closeAI;$('#aiModal').onclick=e=>{if(e.target===$('#aiModal'))closeAI()};
 $('#aiForm').onsubmit=e=>{e.preventDefault();const cfg=aiFlows[activeAIFlow],details=$('#aiRequest').value.trim();const prompt=`${cfg.instruction}\n\n以下是我目前掌握的信息：\n${details}\n\n请先基于现有信息完成可完成的部分；需要确认的内容单独列在最后。`;window.open('https://chatgpt.com/','_blank','noopener');navigator.clipboard.writeText(prompt).then(()=>showToast('✓ 提示词已复制，请在 ChatGPT 中粘贴发送')).catch(()=>showToast('复制失败，请允许浏览器访问剪贴板',true));closeAI()};
 
+
+let deferredInstallPrompt=null;
+const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredInstallPrompt=event;$('#installAppButton').style.display='inline-flex'});
+window.addEventListener('appinstalled',()=>{$('#installAppButton').style.display='none';showToast('✓ 明晓工作台已安装到手机')});
+$('#installAppButton').onclick=async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;return}const isiPhone=/iphone|ipad|ipod/i.test(navigator.userAgent);showToast(isiPhone?'请点 Safari 底部“分享”，再选“添加到主屏幕”':'请打开浏览器菜单，选择“安装应用”或“添加到主屏幕”')};
+if(isStandalone)$('#installAppButton').style.display='none';
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+function setMobileNav(action){document.querySelectorAll('[data-mobile-action]').forEach(b=>b.classList.toggle('active',b.dataset.mobileAction===action))}
+function scrollMobile(target,action){setMobileNav(action);target?.scrollIntoView({behavior:'smooth',block:'start'})}
+document.querySelectorAll('[data-mobile-action]').forEach(button=>button.onclick=()=>{const action=button.dataset.mobileAction;if(action==='home')scrollMobile($('.top'),'home');if(action==='calendar')scrollMobile($('#mobileCalendar'),'calendar');if(action==='students'){active='学生管理';render();scrollMobile($('.top'),'students')}if(action==='resources')scrollMobile($('#mobileResources'),'resources');if(action==='ai')scrollMobile($('#mobileAI'),'ai')});
+function openQuickSheet(){$('#quickSheet').classList.add('show')}function closeQuickSheet(){$('#quickSheet').classList.remove('show')}
+$('#quickFab').onclick=openQuickSheet;$('#closeQuickSheet').onclick=closeQuickSheet;$('#quickSheet').onclick=e=>{if(e.target===$('#quickSheet'))closeQuickSheet()};
+function openPresetTask(board,title=''){closeQuickSheet();openModal(selectedDate);$('#board').value=board;$('#title').value=title;setTimeout(()=>$('#title').focus(),0)}
+document.querySelectorAll('[data-quick]').forEach(button=>button.onclick=()=>{const kind=button.dataset.quick;if(kind==='task')openPresetTask(active==='全部工作'?'业务与客户':active);if(kind==='student')openPresetTask('学生管理');if(kind==='customer')openPresetTask('业务与客户');if(kind==='voice'){closeQuickSheet();const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SpeechRecognition){openPresetTask(active==='全部工作'?'业务与客户':active);showToast('当前浏览器不支持语音识别，请直接输入待办');return}const recognition=new SpeechRecognition();recognition.lang='zh-CN';recognition.interimResults=false;showToast('请开始说话…');recognition.onresult=e=>openPresetTask(active==='全部工作'?'业务与客户':active,e.results[0][0].transcript);recognition.onerror=()=>showToast('没有听清，请再试一次',true);recognition.start()}});
+
 const catPet=$('#catPet'),catSprite=$('#catSprite');
 let catFrame=0,catDragging=false,catMoved=false,catStartX=0,catStartY=0,catOriginX=0,catOriginY=0,catReactTimer;
 function setCatFrame(frame){catFrame=(frame+5)%5;catSprite.style.backgroundPosition=`${catFrame*25}% 0`}
 function reactCat(){let next=catFrame;while(next===catFrame)next=Math.floor(Math.random()*5);setCatFrame(next);catPet.classList.remove('is-reacting');void catPet.offsetWidth;catPet.classList.add('is-reacting');clearTimeout(catReactTimer);catReactTimer=setTimeout(()=>catPet.classList.remove('is-reacting'),520)}
-function clampCat(x,y){return{x:Math.max(0,Math.min(x,window.innerWidth-catPet.offsetWidth)),y:Math.max(0,Math.min(y,window.innerHeight-catPet.offsetHeight))}}
+function clampCat(x,y){const bottomGap=window.innerWidth<=760?72:0;return{x:Math.max(0,Math.min(x,window.innerWidth-catPet.offsetWidth)),y:Math.max(0,Math.min(y,window.innerHeight-catPet.offsetHeight-bottomGap))}}
 function placeCat(){try{const saved=JSON.parse(localStorage.getItem('mingxiao-cat-position')||'null');if(!saved)return;const p=clampCat(saved.x,saved.y);catPet.style.left=p.x+'px';catPet.style.top=p.y+'px';catPet.style.right='auto';catPet.style.bottom='auto'}catch(e){}}
 function saveCatPosition(){const r=catPet.getBoundingClientRect();localStorage.setItem('mingxiao-cat-position',JSON.stringify({x:Math.round(r.left),y:Math.round(r.top)}))}
 catPet.addEventListener('pointerenter',()=>{if(!catDragging)reactCat()});
