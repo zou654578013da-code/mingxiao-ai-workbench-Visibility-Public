@@ -354,7 +354,7 @@ function openInstallGuide(){$('#installGuide').classList.add('show')}function cl
 $('#closeInstallGuide').onclick=$('#installGuideDone').onclick=closeInstallGuide;$('#installGuide').onclick=e=>{if(e.target===$('#installGuide'))closeInstallGuide()};
 $('#installAppButton').onclick=async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;return}openInstallGuide()};
 if(isStandalone)$('#installAppButton').style.display='none';
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=30.1').catch(()=>{}));
 function setMobileNav(action){document.querySelectorAll('[data-mobile-action]').forEach(b=>b.classList.toggle('active',b.dataset.mobileAction===action))}
 function scrollMobile(target,action){setMobileNav(action);target?.scrollIntoView({behavior:'smooth',block:'start'})}
 document.querySelectorAll('[data-mobile-action]').forEach(button=>button.onclick=()=>{const action=button.dataset.mobileAction;if(action==='home')scrollMobile($('.top'),'home');if(action==='calendar')scrollMobile($('#mobileCalendar'),'calendar');if(action==='students'){active='学生管理';render();scrollMobile($('.top'),'students')}if(action==='resources')scrollMobile($('#mobileResources'),'resources');if(action==='ai')scrollMobile($('#mobileAI'),'ai')});
