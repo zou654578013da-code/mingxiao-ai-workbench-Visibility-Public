@@ -221,7 +221,7 @@ async function loadTeachers(){
 async function loadResources(){
   const {data,error}=await db.from('resources').select('id,title,board,file_location,web_link,created_at').order('created_at',{ascending:false});
   if(error){showToast('读取资料失败：'+error.message,true);return}
-  const rows=data||[];notes=rows.filter(r=>r.board==='临时留言');resources=rows.filter(r=>r.board!=='临时留言');renderResources();renderNotes();
+  const rows=data||[];notes=rows.filter(r=>String(r.web_link||'').startsWith('inbox://'));resources=rows.filter(r=>!String(r.web_link||'').startsWith('inbox://'));renderResources();renderNotes();
 }
 async function loadTasks(){
   const {data,error}=await db.from('tasks').select('id,title,board,due_date,completed,notes').order('due_date').order('created_at');
@@ -345,7 +345,7 @@ async function deleteTeacher(id){const t=teachers.find(x=>x.id===id);if(!confirm
 $('#teacherUpload').onchange=e=>uploadTeacherPosters(e.target.files);$('#closeTeacher').onclick=closeTeacherModal;$('#teacherModal').onclick=e=>{if(e.target===$('#teacherModal'))closeTeacherModal()};
 $('#teacherForm').onsubmit=async e=>{e.preventDefault();const {error}=await db.from('teachers').update({name:$('#teacherName').value.trim(),subject:$('#teacherSubject').value.trim()}).eq('id',editingTeacherId);if(error){showToast('修改失败：'+error.message,true);return}closeTeacherModal();showToast('✓ 教师信息已更新');await loadTeachers()};
 $('#closePoster').onclick=()=>$('#posterLightbox').classList.remove('show');$('#posterLightbox').onclick=e=>{if(e.target===$('#posterLightbox'))$('#posterLightbox').classList.remove('show')};
-$('#noteForm').onsubmit=async e=>{e.preventDefault();const button=e.submitter,content=$('#noteContent').value.trim();if(!content)return;button.disabled=true;button.textContent='保存中…';const {error}=await db.from('resources').insert({user_id:currentUser.id,title:$('#noteCategory').value,board:'临时留言',file_location:content,web_link:'inbox://active'});button.disabled=false;button.textContent='保存留言';if(error){showToast('保存留言失败：'+error.message,true);return}$('#noteContent').value='';showToast('✓ 留言已同步保存');await loadResources()};
+$('#noteForm').onsubmit=async e=>{e.preventDefault();const button=e.submitter,content=$('#noteContent').value.trim();if(!content)return;button.disabled=true;button.textContent='保存中…';const {error}=await db.from('resources').insert({user_id:currentUser.id,title:$('#noteCategory').value,board:'个人与行政',file_location:content,web_link:'inbox://active'});button.disabled=false;button.textContent='保存留言';if(error){showToast('保存留言失败：'+error.message,true);return}$('#noteContent').value='';showToast('✓ 留言已同步保存');await loadResources()};
 $('#voiceNote').onclick=()=>{const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SpeechRecognition){showToast('当前浏览器不支持语音识别，请直接输入',true);return}const recognition=new SpeechRecognition();recognition.lang='zh-CN';recognition.interimResults=false;showToast('请开始说话…');recognition.onresult=e=>{$('#noteContent').value=($('#noteContent').value+' '+e.results[0][0].transcript).trim()};recognition.onerror=()=>showToast('没有听清，请再试一次',true);recognition.start()};
 $('#aiSortNotes').onclick=()=>{const today=localISO(new Date()),list=notes.filter(n=>n.web_link!=='inbox://archived'&&(!n.created_at||localISO(new Date(n.created_at))===today));if(!list.length){showToast('今天还没有待整理留言');return}const text=list.map((n,i)=>`${i+1}. [${n.title}] ${n.file_location}`).join('\n');const prompt=`请把以下今天的临时留言整理成简洁的工作记录。按“家长/客户沟通、学生情况、项目想法、待跟进事项”分类；不要编造信息。每条提取：对象、核心情况、下一步。最后单独列出建议转成待办的事项。\n\n${text}`;window.open('https://chatgpt.com/','_blank','noopener');navigator.clipboard.writeText(prompt).then(()=>showToast('✓ 留言已复制，请在 ChatGPT 中粘贴')).catch(()=>showToast('复制失败，请允许访问剪贴板',true))};
 
@@ -378,7 +378,7 @@ function openInstallGuide(){$('#installGuide').classList.add('show')}function cl
 $('#closeInstallGuide').onclick=$('#installGuideDone').onclick=closeInstallGuide;$('#installGuide').onclick=e=>{if(e.target===$('#installGuide'))closeInstallGuide()};
 $('#installAppButton').onclick=async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;return}openInstallGuide()};
 if(isStandalone)$('#installAppButton').style.display='none';
-if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=31.1').then(reg=>reg.update()).catch(()=>{}))}
+if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=31.2').then(reg=>reg.update()).catch(()=>{}))}
 $('#mobileNoteShortcut').onclick=()=>{active='临时留言';render();scrollMobile($('#noteWorkspace'),'notes')};
 function setMobileNav(action){document.querySelectorAll('[data-mobile-action]').forEach(b=>b.classList.toggle('active',b.dataset.mobileAction===action))}
 function scrollMobile(target,action){setMobileNav(action);target?.scrollIntoView({behavior:'smooth',block:'start'})}
