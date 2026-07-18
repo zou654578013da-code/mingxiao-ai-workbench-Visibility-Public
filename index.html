@@ -105,6 +105,13 @@
 }
 @media(display-mode:standalone){.install-app{display:none!important}}
 
+
+.install-guide{position:fixed;inset:0;z-index:120;display:none;align-items:end;padding:18px;background:rgba(29,31,26,.46);backdrop-filter:blur(6px)}
+.install-guide.show{display:flex}.install-guide-card{width:min(460px,100%);margin:0 auto;padding:20px;border:1px solid var(--theme-line,var(--line));border-radius:22px;background:var(--theme-card,#fffefa);box-shadow:0 -15px 55px rgba(30,33,26,.22)}
+.install-guide-head{display:flex;justify-content:space-between;gap:14px}.install-guide-head span,.install-guide-head strong{display:block}.install-guide-head span{margin-bottom:4px;color:var(--muted);font-size:10px}.install-guide-head strong{font-family:Georgia,"Songti SC",serif;font-size:21px}.install-guide-head button{border:0;background:transparent;color:var(--muted);font-size:28px}
+.install-guide ol{display:grid;gap:12px;margin:18px 0;padding:0;list-style:none}.install-guide li{display:grid;grid-template-columns:31px 1fr;gap:10px;align-items:center;padding:10px;border-radius:12px;background:var(--theme-task,#faf9f4);font-size:12px;line-height:1.55}.install-guide li>b{display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:var(--olive);color:#fff}.install-guide-card>small{display:block;margin-top:12px;color:var(--muted);font-size:10px;line-height:1.6;text-align:center}
+@media(max-width:760px){.toast{z-index:115;bottom:78px}.install-guide{padding:14px 14px calc(82px + env(safe-area-inset-bottom))}}
+
 </style>
 </head>
 <body>
@@ -147,6 +154,14 @@
     <button data-quick="student"><span>🎓</span><strong>学生记录</strong><small>加入学生管理板块</small></button>
     <button data-quick="customer"><span>💬</span><strong>客户记录</strong><small>加入业务与客户板块</small></button>
     <button data-quick="voice"><span>🎙️</span><strong>语音记录</strong><small>说完自动填入待办</small></button>
+  </div>
+</div>
+<div class="install-guide" id="installGuide">
+  <div class="install-guide-card">
+    <div class="install-guide-head"><div><span>安装到 iPhone</span><strong>把工作台放到手机桌面</strong></div><button id="closeInstallGuide" aria-label="关闭">×</button></div>
+    <ol><li><b>1</b><span>点击 Safari 底部的<strong>分享按钮</strong>（方框上有一个向上的箭头）</span></li><li><b>2</b><span>在菜单中向下滑，选择<strong>“添加到主屏幕”</strong></span></li><li><b>3</b><span>点击右上角<strong>“添加”</strong>即可</span></li></ol>
+    <button class="btn primary wide" id="installGuideDone">我知道了</button>
+    <small>注意：必须使用 Safari 打开；微信或其他浏览器里不会出现该选项。</small>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -334,7 +349,9 @@ let deferredInstallPrompt=null;
 const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
 window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredInstallPrompt=event;$('#installAppButton').style.display='inline-flex'});
 window.addEventListener('appinstalled',()=>{$('#installAppButton').style.display='none';showToast('✓ 明晓工作台已安装到手机')});
-$('#installAppButton').onclick=async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;return}const isiPhone=/iphone|ipad|ipod/i.test(navigator.userAgent);showToast(isiPhone?'请点 Safari 底部“分享”，再选“添加到主屏幕”':'请打开浏览器菜单，选择“安装应用”或“添加到主屏幕”')};
+function openInstallGuide(){$('#installGuide').classList.add('show')}function closeInstallGuide(){$('#installGuide').classList.remove('show')}
+$('#closeInstallGuide').onclick=$('#installGuideDone').onclick=closeInstallGuide;$('#installGuide').onclick=e=>{if(e.target===$('#installGuide'))closeInstallGuide()};
+$('#installAppButton').onclick=async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;return}openInstallGuide()};
 if(isStandalone)$('#installAppButton').style.display='none';
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 function setMobileNav(action){document.querySelectorAll('[data-mobile-action]').forEach(b=>b.classList.toggle('active',b.dataset.mobileAction===action))}
