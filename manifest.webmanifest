@@ -1,0 +1,26 @@
+{
+  "name": "明晓 AI 工作台",
+  "short_name": "明晓工作台",
+  "description": "明晓的个人 AI 工作记录台",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#e8e6df",
+  "theme_color": "#758052",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
