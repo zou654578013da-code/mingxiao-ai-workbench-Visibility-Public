@@ -210,7 +210,7 @@
 const SUPABASE_URL='https://xdnrawhfgtmmonphkcwa.supabase.co';
 const SUPABASE_KEY='sb_publishable_HWE29hznAOmQI29fH56KxA_Jx9_mg1D';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const boards=[['全部工作','⌂'],['学生与家长','🎓'],['市场活动','📣'],['新媒体','🎬'],['课程与教材','📚'],['项目中心','🧪'],['教师与机构','👩‍🏫'],['模板与品牌','🎨'],['个人与行政','📝']];
+const boards=[['全部工作','⌂'],['学生与家长','🎓'],['市场活动','📣'],['新媒体','🎬'],['项目中心','🧪'],['教师与机构','👩‍🏫'],['模板与品牌','🎨'],['个人与行政','📝']];
 const isStudentBoard=name=>name==='学生与家长'||name==='学生管理'||name==='业务与客户';
 const boardLabel=name=>name==='个人与行政'?'临时留言板':name==='项目中心'?'课程资料库':isStudentBoard(name)?'学生与家长':name;
 const storageBoard=name=>isStudentBoard(name)?'学生管理':name;
@@ -439,7 +439,7 @@ function openInstallGuide(){$('#installGuide').classList.add('show')}function cl
 $('#closeInstallGuide').onclick=$('#installGuideDone').onclick=closeInstallGuide;$('#installGuide').onclick=e=>{if(e.target===$('#installGuide'))closeInstallGuide()};
 $('#installAppButton').onclick=async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;return}openInstallGuide()};
 if(isStandalone)$('#installAppButton').style.display='none';
-if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=40').then(reg=>reg.update()).catch(()=>{}))}
+if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=41').then(reg=>reg.update()).catch(()=>{}))}
 $('#mobileNoteShortcut').onclick=()=>{active='个人与行政';render();scrollMobile($('#noteWorkspace'),'notes')};
 function setMobileNav(action){document.querySelectorAll('[data-mobile-action]').forEach(b=>b.classList.toggle('active',b.dataset.mobileAction===action))}
 function scrollMobile(target,action){setMobileNav(action);target?.scrollIntoView({behavior:'smooth',block:'start'})}
