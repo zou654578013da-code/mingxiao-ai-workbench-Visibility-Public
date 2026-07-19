@@ -154,7 +154,7 @@
   </form>
 </section>
 <main class="shell" id="appShell">
-  <aside class="side"><div class="brand"><div class="mark">M</div><div><strong>明晓工作台</strong><small>MINGXIAO STUDIO</small></div></div><p class="label">工作板块</p><nav class="nav" id="nav"></nav><div class="storage"><span>资料存储</span><strong>iCloud 已同步</strong><small>桌面 / 工作材料</small><div class="meter"><i></i></div></div></aside>
+  <aside class="side"><div class="brand"><div class="mark">M</div><div><strong>明晓工作台</strong><small>MINGXIAO STUDIO</small></div></div><p class="label">工作板块</p><nav class="nav" id="nav"></nav></aside>
   <section class="work"><header class="top"><div><p id="dateLine">今天</p><h1 id="greeting">你好，明晓</h1></div><div class="actions"><button class="btn secondary install-app" id="installAppButton" aria-label="安装到手机" title="安装到手机">⇩</button><button class="btn secondary mobile-note-shortcut" id="mobileNoteShortcut" aria-label="打开留言板" title="留言板">📝</button><button class="btn secondary" id="appearanceButton">外观</button><button class="btn secondary" id="calendarExport">导出日历</button><button class="btn primary" id="addTop">＋ 新增待办</button><span class="user-email" id="userEmail"></span><button class="btn secondary" id="logoutButton">退出</button><div class="avatar">明</div></div></header><div class="mobile-nav" id="mobileNav"></div>
     <div id="taskWorkspace"><div class="summary"><article><span>今日待办</span><strong id="todayCount">0</strong><div class="daily-quote" title="今日鼓励"><div class="daily-quote-track" id="dailyQuote"></div></div></article><article class="monthly-goal-card"><span>本月目标</span><strong id="monthGoal">¥0</strong><small id="monthCompleted">已完成 ¥0</small><div class="goal-progress"><i id="monthGoalBar"></i></div><em id="monthGoalPercent">0%</em><button type="button" id="editMonthGoal">填写金额</button></article></div><span id="activeName" hidden>全部工作</span>
     <div class="command-grid">
@@ -467,7 +467,7 @@ function openInstallGuide(){$('#installGuide').classList.add('show')}function cl
 $('#closeInstallGuide').onclick=$('#installGuideDone').onclick=closeInstallGuide;$('#installGuide').onclick=e=>{if(e.target===$('#installGuide'))closeInstallGuide()};
 $('#installAppButton').onclick=async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;return}openInstallGuide()};
 if(isStandalone)$('#installAppButton').style.display='none';
-if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=42').then(reg=>reg.update()).catch(()=>{}))}
+if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=43').then(reg=>reg.update()).catch(()=>{}))}
 $('#mobileNoteShortcut').onclick=()=>{active='个人与行政';render();scrollMobile($('#noteWorkspace'),'notes')};
 function setMobileNav(action){document.querySelectorAll('[data-mobile-action]').forEach(b=>b.classList.toggle('active',b.dataset.mobileAction===action))}
 function scrollMobile(target,action){setMobileNav(action);target?.scrollIntoView({behavior:'smooth',block:'start'})}
