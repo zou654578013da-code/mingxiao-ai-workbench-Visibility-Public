@@ -155,7 +155,7 @@
 </section>
 <main class="shell" id="appShell">
   <aside class="side"><div class="brand"><div class="mark">M</div><div><strong>明晓工作台</strong><small>MINGXIAO STUDIO</small></div></div><p class="label">工作板块</p><nav class="nav" id="nav"></nav></aside>
-  <section class="work"><header class="top"><div><p id="dateLine">今天</p><h1 id="greeting">你好，明晓</h1></div><div class="actions"><button class="btn secondary install-app" id="installAppButton" aria-label="安装到手机" title="安装到手机">⇩</button><button class="btn secondary mobile-note-shortcut" id="mobileNoteShortcut" aria-label="打开留言板" title="留言板">📝</button><a class="btn secondary mobile-xiaomai-shortcut" href="https://b.xiaomai5.com/#/home" aria-label="打开小麦课表" title="小麦课表">🌾</a><button class="btn secondary" id="appearanceButton">外观</button><button class="btn secondary" id="calendarExport">导出日历</button><button class="btn primary" id="addTop">＋ 新增待办</button><span class="user-email" id="userEmail"></span><button class="btn secondary" id="logoutButton">退出</button><div class="avatar">明</div></div></header><div class="mobile-nav" id="mobileNav"></div>
+  <section class="work"><header class="top"><div><p id="dateLine">今天</p><h1 id="greeting">你好，明晓</h1></div><div class="actions"><button class="btn secondary install-app" id="installAppButton" aria-label="安装到手机" title="安装到手机">⇩</button><button class="btn secondary" id="appearanceButton">外观</button><button class="btn secondary" id="calendarExport">导出日历</button><button class="btn primary" id="addTop">＋ 新增待办</button><span class="user-email" id="userEmail"></span><button class="btn secondary" id="logoutButton">退出</button><div class="avatar">明</div></div></header><div class="mobile-nav" id="mobileNav"></div>
     <div id="taskWorkspace"><div class="summary"><article><span>今日待办</span><strong id="todayCount">0</strong><div class="daily-quote" title="今日鼓励"><div class="daily-quote-track" id="dailyQuote"></div></div></article><article class="monthly-goal-card"><span>本月目标</span><strong id="monthGoal">¥0</strong><small id="monthCompleted">已完成 ¥0</small><div class="goal-progress"><i id="monthGoalBar"></i></div><em id="monthGoalPercent">0%</em><button type="button" id="editMonthGoal">填写金额</button></article></div><span id="activeName" hidden>全部工作</span>
     <div class="command-grid">
       <div class="command-left">
@@ -197,7 +197,7 @@
   <button data-mobile-action="calendar"><span>▦</span>日历</button>
   <button data-mobile-action="students"><span>🎓</span>学生</button>
   <button data-mobile-action="notes"><span>📝</span>留言</button>
-  <button data-mobile-action="ai"><span>✦</span>AI</button>
+  <button data-mobile-action="xiaomai"><span>🌾</span>小麦</button>
 </nav>
 <button class="quick-fab" id="quickFab" aria-label="快速新增">＋</button>
 <div class="quick-sheet" id="quickSheet">
@@ -207,7 +207,6 @@
     <button data-quick="student"><span>🎓</span><strong>学生记录</strong><small>加入学生与家长板块</small></button>
     <button data-quick="customer"><span>💬</span><strong>家长沟通</strong><small>加入学生与家长板块</small></button>
     <button data-quick="voice"><span>🎙️</span><strong>语音记录</strong><small>说完自动填入待办</small></button>
-    <button data-quick="xiaomai"><span>🌾</span><strong>小麦课表</strong><small>安全打开小麦助教后台</small></button>
   </div>
 </div>
 <div class="install-guide" id="installGuide">
@@ -470,15 +469,15 @@ function openInstallGuide(){$('#installGuide').classList.add('show')}function cl
 $('#closeInstallGuide').onclick=$('#installGuideDone').onclick=closeInstallGuide;$('#installGuide').onclick=e=>{if(e.target===$('#installGuide'))closeInstallGuide()};
 $('#installAppButton').onclick=async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;return}openInstallGuide()};
 if(isStandalone)$('#installAppButton').style.display='none';
-if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=50').then(reg=>reg.update()).catch(()=>{}))}
-$('#mobileNoteShortcut').onclick=()=>{active='个人与行政';render();scrollMobile($('#noteWorkspace'),'notes')};
+if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=51').then(reg=>reg.update()).catch(()=>{}))}
+
 function setMobileNav(action){document.querySelectorAll('[data-mobile-action]').forEach(b=>b.classList.toggle('active',b.dataset.mobileAction===action))}
 function scrollMobile(target,action){setMobileNav(action);target?.scrollIntoView({behavior:'smooth',block:'start'})}
-function openMobileHome(){active='全部工作';render();$('#mobileCalendar').classList.add('hidden');scrollMobile($('.top'),'home')}function openMobileCalendar(){active='全部工作';render();$('#mobileCalendar').classList.remove('hidden');requestAnimationFrame(()=>scrollMobile($('#mobileCalendar'),'calendar'))}function openMobileNotes(){active='个人与行政';render();requestAnimationFrame(()=>scrollMobile($('#noteWorkspace'),'notes'))}document.querySelectorAll('[data-mobile-action]').forEach(button=>button.onclick=()=>{const action=button.dataset.mobileAction;if(action==='home')openMobileHome();if(action==='calendar')openMobileCalendar();if(action==='students'){active='学生与家长';render();scrollMobile($('.top'),'students')}if(action==='notes')openMobileNotes();if(action==='ai'){active='全部工作';render();requestAnimationFrame(()=>scrollMobile($('#mobileAI'),'ai'))}});
+function openMobileHome(){active='全部工作';render();$('#mobileCalendar').classList.add('hidden');scrollMobile($('.top'),'home')}function openMobileCalendar(){active='全部工作';render();$('#mobileCalendar').classList.remove('hidden');requestAnimationFrame(()=>scrollMobile($('#mobileCalendar'),'calendar'))}function openMobileNotes(){active='个人与行政';render();requestAnimationFrame(()=>scrollMobile($('#noteWorkspace'),'notes'))}document.querySelectorAll('[data-mobile-action]').forEach(button=>button.onclick=()=>{const action=button.dataset.mobileAction;if(action==='home')openMobileHome();if(action==='calendar')openMobileCalendar();if(action==='students'){active='学生与家长';render();scrollMobile($('.top'),'students')}if(action==='notes')openMobileNotes();if(action==='xiaomai')openXiaomai()});
 function openQuickSheet(){$('#quickSheet').classList.add('show')}function closeQuickSheet(){$('#quickSheet').classList.remove('show')}
 $('#quickFab').onclick=openQuickSheet;$('#closeQuickSheet').onclick=closeQuickSheet;$('#quickSheet').onclick=e=>{if(e.target===$('#quickSheet'))closeQuickSheet()};
 function openPresetTask(board,title=''){closeQuickSheet();openModal(selectedDate);$('#board').value=storageBoard(board);$('#title').value=title;setTimeout(()=>$('#title').focus(),0)}
-document.querySelectorAll('[data-quick]').forEach(button=>button.onclick=()=>{const kind=button.dataset.quick;if(kind==='note'){closeQuickSheet();active='个人与行政';render();scrollMobile($('#noteWorkspace'),'notes');setTimeout(()=>$('#noteContent').focus(),350)}if(kind==='task')openPresetTask(active==='全部工作'||active==='个人与行政'?'学生管理':active);if(kind==='student')openPresetTask('学生管理');if(kind==='customer')openPresetTask('学生管理');if(kind==='xiaomai'){closeQuickSheet();openXiaomai()}if(kind==='voice'){closeQuickSheet();const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SpeechRecognition){openPresetTask(active==='全部工作'||active==='个人与行政'?'学生管理':active);showToast('当前浏览器不支持语音识别，请直接输入待办');return}const recognition=new SpeechRecognition();recognition.lang='zh-CN';recognition.interimResults=false;showToast('请开始说话…');recognition.onresult=e=>openPresetTask(active==='全部工作'||active==='个人与行政'?'学生管理':active,e.results[0][0].transcript);recognition.onerror=()=>showToast('没有听清，请再试一次',true);recognition.start()}});
+document.querySelectorAll('[data-quick]').forEach(button=>button.onclick=()=>{const kind=button.dataset.quick;if(kind==='note'){closeQuickSheet();active='个人与行政';render();scrollMobile($('#noteWorkspace'),'notes');setTimeout(()=>$('#noteContent').focus(),350)}if(kind==='task')openPresetTask(active==='全部工作'||active==='个人与行政'?'学生管理':active);if(kind==='student')openPresetTask('学生管理');if(kind==='customer')openPresetTask('学生管理');if(kind==='voice'){closeQuickSheet();const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SpeechRecognition){openPresetTask(active==='全部工作'||active==='个人与行政'?'学生管理':active);showToast('当前浏览器不支持语音识别，请直接输入待办');return}const recognition=new SpeechRecognition();recognition.lang='zh-CN';recognition.interimResults=false;showToast('请开始说话…');recognition.onresult=e=>openPresetTask(active==='全部工作'||active==='个人与行政'?'学生管理':active,e.results[0][0].transcript);recognition.onerror=()=>showToast('没有听清，请再试一次',true);recognition.start()}});
 
 const catPet=$('#catPet'),catSprite=$('#catSprite');
 let catFrame=0,catDragging=false,catMoved=false,catStartX=0,catStartY=0,catOriginX=0,catOriginY=0,catReactTimer;
