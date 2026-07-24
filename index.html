@@ -298,37 +298,37 @@ async function startApp(session){
 function showLogin(){currentUser=null;tasks=[];resources=[];notes=[];curriculumItems=[];monthlyGoals=[];monthlyOperations=[];teachers=[];wpsSalesSummary=null;clearInterval(wpsSalesTimer);wpsSalesTimer=null;$('#appShell').classList.add('hidden');$('#authScreen').classList.remove('hidden')}
 async function initAuth(){try{const {data:{session}}=await Promise.race([db.auth.getSession(),timeoutAfter(10000,'读取登录状态超时')]);$('#loadingCover').classList.add('hidden');if(session)await startApp(session);else showLogin()}catch(error){$('#loadingCover').classList.add('hidden');showLogin();$('#authError').textContent='登录状态读取失败，请重新登录。'}}
 const encouragements=[
-  '先完成一件小事，今天就已经在向前。',
-  '不用一次解决全部，先走好眼前这一步。',
-  '你的认真，会慢慢变成别人看得见的成果。',
-  '忙碌的时候，也别忘了给自己留一点呼吸。',
-  '今天完成的每一点，都在替未来减轻负担。',
-  '不追求满分的一天，只要比昨天更清楚一点。',
-  '把复杂的事情拆小，你会发现自己很有办法。',
-  '允许进度慢一点，但不要忽略已经走过的路。',
-  '你不需要时刻有力量，愿意继续就很了不起。',
-  '重要的不是做得多快，而是始终知道自己为何出发。',
-  '认真生活的人，也值得被自己的温柔照顾。',
-  '先处理最让你安心的那件事，节奏自然会回来。',
-  '今天也不用证明什么，踏实完成就很好。',
-  '灵感会来，答案也会来，先给自己一点时间。',
-  '你正在建立的，不只是工作台，也是自己的秩序。',
-  '休息不是耽误，是为了让后面的路更稳。',
-  '有些成果需要时间发酵，你已经播下种子。',
-  '别急着否定今天，小小的推进也值得记录。',
-  '把注意力放回自己能做的事情上，心会轻一点。',
-  '今天的你，已经拥有处理今天问题的能力。',
-  '忙而不乱，慢而不停，就是很好的状态。',
-  '每一次整理，都是在为自己腾出新的空间。',
-  '不必把所有人的期待都背在自己身上。',
-  '你的判断和经验，正在一天一天变得更可靠。',
-  '先照顾好自己的能量，再把事情一件件做好。',
-  '今天值得期待，也允许它只是普通而安稳的一天。',
-  '做完之后记得肯定自己，而不只是寻找不足。',
-  '你已经很努力了，接下来让方法替你省一点力。',
-  '困难不代表走错了，只是提醒你换一种节奏。',
-  '让今天有一个清晰的重点，就已经足够。',
-  '愿你忙有所获，也能在缝隙里感受到轻松。'
+  '先明确目标，再安排动作。',
+  '没有转化的数据，只是热闹。',
+  '客户需求，是所有方案的起点。',
+  '先把有效的方法跑通，再考虑放大。',
+  '今天最重要的事，是推进一个关键结果。',
+  '运营不是堆任务，而是持续解决问题。',
+  '把目标拆到今天，执行才会真正发生。',
+  '每一次客户反馈，都是一次产品校准。',
+  '先完成闭环，再追求漂亮。',
+  '好的内容，既能被看见，也能带来行动。',
+  '不只记录结果，也要记录结果为什么发生。',
+  '稳定的成交，来自稳定的跟进。',
+  '减少无效动作，把时间留给关键客户。',
+  '方案是否有效，要看客户是否愿意买单。',
+  '先做出可用版本，再根据反馈优化。',
+  '运营的核心，是让正确的事情重复发生。',
+  '今天推进一件事，比同时启动十件事更有效。',
+  '客户没有回复，也是一种需要分析的反馈。',
+  '复盘不是找问题，而是找到下一次的增长点。',
+  '内容负责吸引，服务负责转化，交付负责口碑。',
+  '真正的效率，是少做无效工作。',
+  '目标要清晰，过程要可追踪，结果要能复盘。',
+  '及时跟进，比反复准备更接近成交。',
+  '把经验变成流程，才能稳定复制。',
+  '一个明确的行动，比十个模糊的想法更有价值。',
+  '好的运营节奏，是计划、执行、反馈、调整。',
+  '先判断事情是否重要，再判断是否紧急。',
+  '增长不是偶然爆发，而是持续优化细节。',
+  '客户真正关心的，是问题能不能被解决。',
+  '每周沉淀一个有效方法，长期就会形成优势。',
+  '把注意力放在结果上，把改进落实到动作里。'
 ];
 function startDailyQuoteMarquee(){const box=document.querySelector('.daily-quote'),track=$('#dailyQuote');if(!box||!track)return;track.getAnimations().forEach(a=>a.cancel());const from=box.clientWidth+12,to=-track.scrollWidth-12,distance=from-to,duration=Math.max(9000,distance/34*1000);track.animate([{transform:`translateX(${from}px)`},{transform:`translateX(${to}px)`}],{duration,iterations:Infinity,easing:'linear'})}
 function renderDailyQuote(){const start=new Date(realToday.getFullYear(),0,0),day=Math.floor((realToday-start)/86400000);$('#dailyQuote').textContent=encouragements[(day-1)%encouragements.length];requestAnimationFrame(startDailyQuoteMarquee)}
@@ -484,7 +484,7 @@ function openInstallGuide(){$('#installGuide').classList.add('show')}function cl
 $('#closeInstallGuide').onclick=$('#installGuideDone').onclick=closeInstallGuide;$('#installGuide').onclick=e=>{if(e.target===$('#installGuide'))closeInstallGuide()};
 $('#installAppButton').onclick=async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;return}openInstallGuide()};
 if(isStandalone)$('#installAppButton').style.display='none';
-if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=60').then(reg=>reg.update()).catch(()=>{}))}
+if('serviceWorker' in navigator){let swRefreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRefreshing)return;swRefreshing=true;location.reload()});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=61').then(reg=>reg.update()).catch(()=>{}))}
 
 function setMobileNav(action){document.querySelectorAll('[data-mobile-action]').forEach(b=>b.classList.toggle('active',b.dataset.mobileAction===action))}
 function scrollMobile(target,action){setMobileNav(action);target?.scrollIntoView({behavior:'smooth',block:'start'})}
